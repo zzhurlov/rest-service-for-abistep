@@ -22,7 +22,7 @@ class UserRepository(BaseRepository):
         balance: int,
         session: AsyncSession,
     ):
-        await session.execute(
+        user = await session.execute(
             insert(User).values(
                 first_name=first_name,
                 last_name=last_name,
@@ -31,6 +31,8 @@ class UserRepository(BaseRepository):
             )
         )
         await session.commit()
+
+        return user
 
     def __validate_balance(self, sender_balance, amount):
         if amount > sender_balance:
