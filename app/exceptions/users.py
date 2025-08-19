@@ -29,3 +29,9 @@ class InvalidCredentialsException(ApplicationException):
     @property
     def message(self):
         return f"Неверные данные создания пользователя"
+
+
+class SameIdsException(ApplicationException):
+    @property
+    def message(self):
+        return f"Нельзя делать переводы самому себе"
