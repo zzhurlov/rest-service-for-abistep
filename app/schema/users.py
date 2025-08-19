@@ -1,19 +1,28 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 
-from app.models.users import User
+from app.exceptions.users import NegativeAmountException, NegativeBalanceException
 
 
 class CreateUserSchema(BaseModel):
-    first_name: str
-    last_name: str
-    username: str
+    first_name: str = Field(..., min_length=1, max_length=50)
+    last_name: str = Field(..., min_length=1, max_length=50)
+    username: str = Field(..., min_length=3, max_length=30)
     balance: int
 
-    @classmethod
-    def from_model(cls, user: User) -> "CreateUserSchema":
-        return CreateUserSchema(
-            first_name=user.first_name,
-            last_name=user.last_name,
-            username=user.username,
-            balance=user.balance,
-        )
+    @field_validator("balance")
+    def balance_must_be_positive(cls, value: int):
+        if value < 0:
+            raise NegativeBalanceException
+        return value
+
+
+class TransferSchema(BaseModel):
+    from_user_id: int
+    to_user_id: int
+    amount: int
+
+    @field_validator("amount")
+    def amount_must_be_positive(cls, value: int):
+        if value < 0:
+            raise NegativeAmountException
+        return value

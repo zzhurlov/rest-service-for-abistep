@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_async_session
 from app.exceptions.base import ApplicationException
-from app.schema.users import CreateUserSchema
+from app.schema.users import CreateUserSchema, TransferSchema
 from app.services.users import user_service
 
 user_router = APIRouter(tags=["users"])
@@ -24,7 +24,7 @@ async def create_user_handler(
     session: Annotated[AsyncSession, Depends(get_async_session)],
 ):
     try:
-        user = await user_service.create_user(
+        await user_service.create_user(
             first_name=schema.first_name,
             last_name=schema.last_name,
             username=schema.username,
@@ -36,4 +36,21 @@ async def create_user_handler(
             status_code=status.HTTP_400_BAD_REQUEST, detail={"error": exception.message}
         )
 
-    return user
+    return {"message": "successful creation"}
+
+
+@user_router.post("/transfer")
+async def transfer_handler(
+    schema: TransferSchema,
+    session: Annotated[AsyncSession, Depends(get_async_session)],
+):
+    try:
+        await user_service.transfer_to_other_user(
+            schema.from_user_id, schema.to_user_id, schema.amount, session
+        )
+    except ApplicationException as exception:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail={"error": exception.message}
+        )
+
+    return {"message": "successful transfer"}
