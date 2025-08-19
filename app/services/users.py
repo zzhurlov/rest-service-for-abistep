@@ -1,5 +1,4 @@
 from app.db.repositories.user import UserRepository
-from app.exceptions.users import InvalidCredentialsException, NegativeAmountException
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
