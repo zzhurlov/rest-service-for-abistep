@@ -6,8 +6,8 @@ from app.exceptions.users import SameIdsException
 
 
 class UserService:
-    def __init__(self):
-        self.repository = UserRepository()
+    def __init__(self, repository: UserRepository):
+        self.repository = repository
 
     def __validate_ids(self, from_user_id: int, to_user_id: int):
         if from_user_id == to_user_id:
@@ -34,4 +34,6 @@ class UserService:
         await self.repository.transfer(from_user_id, to_user_id, amount, session)
 
 
-user_service = UserService()
+user_repository = UserRepository()
+
+user_service = UserService(repository=user_repository)
