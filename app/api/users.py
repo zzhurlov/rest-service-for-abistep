@@ -1,5 +1,6 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
+import fastapi
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
